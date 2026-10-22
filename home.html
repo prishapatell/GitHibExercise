@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BiteBuddy</title>
+
+    <style>
+        :root {
+            --dark-green: #003D2E;
+            --dark-green-2: #002F24;
+            --lime: #8AF23A;
+            --orange: #FF6B3D;
+            --cream: #F8F6EF;
+            --white: #FFFFFF;
+            --light-green: #E9F8D9;
+            --text-dark: #16352C;
+            --text-gray: #68766F;
+            --border: #DDE9E1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--cream);
+            color: var(--text-dark);
+        }
+
+        /* NAVIGATION */
+        .navbar {
+            min-height: 76px;
+            background-color: var(--dark-green);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 50px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-image {
+            width: 105px;
+            height: 55px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #DCE8E1;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover,
+        .nav-links .active {
+            color: var(--lime);
+        }
+
+        .nav-links .active {
+            font-weight: bold;
+        }
+
+        /* HERO SECTION */
+        .hero {
+            max-width: 1216px;
+            margin: 0 auto;
+            padding: 55px 61px 0;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) 435px;
+            column-gap: 90px;
+            align-items: center;
+        }
+
+        .hero-content {
+            padding-top: 10px;
+        }
+
+        .eyebrow {
+            color: var(--orange);
+            font-size: 11px;
+            font-weight: bold;
+            letter-spacing: 0.08em;
+            margin-bottom: 18px;
+        }
+
+        .eyebrow span {
+            color: var(--lime);
+            font-size: 15px;
+            margin-right: 7px;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            line-height: 1.03;
+            letter-spacing: -2px;
+            color: var(--dark-green);
+            margin-bottom: 20px;
+        }
+
+        .hero-description {
+            font-size: 18px;
+            line-height: 1.5;
+            color: var(--text-gray);
+            margin-bottom: 25px;
+        }
+
+        /* BUTTONS */
+        .buttons {
+            display: flex;
+            gap: 12px;
+        }
+
+        .btn {
+            min-height: 42px;
+            padding: 0 20px;
+            border-radius: 22px;
+            font-size: 12px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .create-btn {
+            background-color: var(--dark-green);
+            color: var(--lime);
+            border: 1px solid var(--dark-green);
+        }
+
+        .create-btn:hover {
+            background-color: var(--dark-green-2);
+            transform: translateY(-1px);
+        }
+
+        .join-btn {
+            background-color: transparent;
+            color: var(--dark-green);
+            border: 1px solid var(--dark-green);
+        }
+
+        .join-btn:hover {
+            background-color: var(--dark-green);
+            color: var(--lime);
+        }
+
+        .small-text {
+            margin-top: 18px;
+            font-size: 11px;
+            color: #78877F;
+        }
+
+        /* HERO IMAGE */
+        .hero-image {
+            width: 100%;
+            height: 336px;
+            border-radius: 20px;
+            overflow: hidden;
+            background-color: var(--dark-green);
+            border: 5px solid var(--dark-green);
+        }
+
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        /* THREE STEPS */
+        .steps {
+            max-width: 1216px;
+            margin: 35px auto 0;
+            padding: 0 61px 55px;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px;
+        }
+
+        .step-card {
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 17px;
+            min-height: 90px;
+            padding: 20px;
+            transition: 0.2s;
+        }
+
+        .step-card:hover {
+            border-color: var(--lime);
+            transform: translateY(-2px);
+        }
+
+        .step-number {
+            color: var(--orange);
+            font-size: 11px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .step-text {
+            color: var(--dark-green);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        /* TABLET */
+        @media (max-width: 1000px) {
+            .navbar {
+                padding: 0 25px;
+            }
+
+            .nav-links {
+                gap: 18px;
+            }
+
+            .hero {
+                grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+                column-gap: 35px;
+                padding: 45px 30px 0;
+            }
+
+            .hero h1 {
+                font-size: 44px;
+            }
+
+            .hero-image {
+                height: 300px;
+            }
+
+            .steps {
+                padding: 0 30px 40px;
+            }
+        }
+
+        /* MOBILE */
+        @media (max-width: 650px) {
+            .navbar {
+                min-height: 70px;
+                padding: 0 18px;
+            }
+
+            .logo-image {
+                width: 90px;
+            }
+
+            .nav-links {
+                gap: 12px;
+            }
+
+            .nav-links a {
+                font-size: 11px;
+            }
+
+            .hero {
+                grid-template-columns: 1fr;
+                padding: 35px 22px 0;
+                gap: 28px;
+            }
+
+            .hero h1 {
+                font-size: 40px;
+            }
+
+            .hero-description {
+                font-size: 16px;
+            }
+
+            .buttons {
+                flex-wrap: wrap;
+            }
+
+            .hero-image {
+                height: 260px;
+            }
+
+            .steps {
+                padding: 0 22px 35px;
+                grid-template-columns: 1fr;
+                margin-top: 28px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .navbar {
+                padding: 0 12px;
+            }
+
+            .logo-image {
+                width: 75px;
+            }
+
+            .nav-links {
+                gap: 8px;
+            }
+
+            .nav-links a {
+                font-size: 10px;
+            }
+
+            .hero h1 {
+                font-size: 35px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+    <header class="navbar">
+
+        <div class="logo-area">
+            <a href="home.html">
+                <img
+                    src="bitebuddy-logo.png"
+                    class="logo-image"
+                    alt="BiteBuddy logo"
+                >
+            </a>
+        </div>
+
+        <nav class="nav-links">
+            <a href="home.html" class="active">Home</a>
+            <a href="Create-Group.html">Create Group</a>
+            <a href="join-group.html">Join Group</a>
+            <a href="restaurants.html">Restaurants</a>
+        </nav>
+
+    </header>
+
+    <!-- HERO SECTION -->
+    <main>
+
+        <section class="hero">
+
+            <div class="hero-content">
+
+                <div class="eyebrow">
+                    <span>✦</span>
+                    DINNER, DECIDED TOGETHER
+                </div>
+
+                <h1>
+                    Stop debating.<br>
+                    Start eating.
+                </h1>
+
+                <p class="hero-description">
+                    Find a restaurant everyone can agree on.
+                </p>
+
+                <div class="buttons">
+
+                    <a
+                        href="Create-Group.html"
+                        class="btn create-btn"
+                    >
+                        Create a Group
+                    </a>
+
+                    <a
+                        href="join-group.html"
+                        class="btn join-btn"
+                    >
+                        Join a Group
+                    </a>
+
+                </div>
+
+                <p class="small-text">
+                    Built for friends, students, and groups
+                    who want a quick decision.
+                </p>
+
+            </div>
+
+            <!-- RESTAURANT IMAGE -->
+            <div class="hero-image">
+                <img
+                    src="BiteBuddy Restaurant Scene.jpg"
+                    alt="Friends eating together"
+                >
+            </div>
+
+        </section>
+
+        <!-- HOW IT WORKS -->
+        <section class="steps">
+
+            <div class="step-card">
+                <div class="step-number">01</div>
+                <div class="step-text">
+                    Everyone shares their preferences.
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">02</div>
+                <div class="step-text">
+                    BiteBuddy finds the best matches.
+                </div>
+            </div>
+
+            <div class="step-card">
+                <div class="step-number">03</div>
+                <div class="step-text">
+                    Your group votes.
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+</body>
+</html>
