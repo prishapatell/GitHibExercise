@@ -1,0 +1,2825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Explore Restaurants | BiteBuddy</title>
+<style>
+:root {
+  --green: #003D2E;
+  --deep: #002F24;
+  --lime: #8AF23A;
+  --orange: #FF6B3D;
+  --cream: #F8F6EF;
+  --ink: #16352C;
+  --muted: #64736B;
+  --line: #DDE7DF;
+  --soft: #E9F8D9;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--cream);
+  color: var(--ink);
+  font: 15px/1.55 Arial, Helvetica, sans-serif;
+}
+
+h1, h2, p { margin: 0; }
+h1, h2 { color: var(--green); line-height: 1.25; }
+a { text-decoration: none; }
+
+.navbar {
+  min-height: 76px;
+  padding: 12px 35px;
+  background: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.logo-image {
+  width: 105px;
+  height: 55px;
+  object-fit: contain;
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+  flex-wrap: wrap;
+}
+
+.nav-links a {
+  color: #DCE8E1;
+  font-size: 13px;
+}
+
+.nav-links a:hover,
+.nav-links .active { color: var(--lime); }
+
+.wrap {
+  max-width: 1256px;
+  margin: 0 auto;
+  padding: 0 28px;
+}
+
+main.wrap {
+  padding-top: 32px;
+  padding-bottom: 70px;
+}
+  
+.page-heading { margin-bottom: 28px; }
+
+h1 {
+  font-size: clamp(30px, 4vw, 43px);
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+
+.page-heading p {
+  color: var(--muted);
+  margin-top: 10px;
+}
+
+.filter-note {
+  color: var(--muted);
+  font-size: 11px;
+  margin-bottom: 25px;
+}
+
+.results-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.results-bar strong { font-size: 13px; }
+
+.restaurant-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+
+.restaurant-card {
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 8px 28px rgba(0,61,46,.045);
+  display: grid;
+  grid-template-columns: 150px minmax(0,1fr);
+  min-height: 285px;
+}
+
+.restaurant-card:hover {
+  border-color: #B9CDB7;
+  box-shadow: 0 8px 25px rgba(0,61,46,.09);
+}
+
+.restaurant-visual {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 15px;
+  border-right: 1px solid var(--line);
+  min-height: 200px;
+  overflow: hidden;
+}
+
+.restaurant-visual img {
+  width: 100%;
+  max-height: 180px;
+  object-fit: contain;
+}
+
+.logo-fallback {
+  display: none;
+  text-align: center;
+  font-weight: 800;
+  font-size: 17px;
+  color: var(--green);
+  overflow-wrap: anywhere;
+}
+
+.restaurant-info {
+  padding: 22px 18px;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.restaurant-title {
+  font-size: 20px;
+  margin-bottom: 6px;
+}
+
+.cuisine-meta {
+  color: var(--muted);
+  font-size: 12px;
+  margin-bottom: 13px;
+}
+
+.restaurant-description {
+  font-size: 13px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.restaurant-facts {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin: 17px 0 14px;
+  flex-wrap: wrap;
+}
+
+.price-line {
+  font-size: 23px;
+  font-weight: 700;
+  color: var(--green);
+}
+
+.distance-line {
+  font-size: 12px;
+  color: var(--muted);
+  border-left: 1px solid var(--line);
+  padding-left: 13px;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 18px;
+}
+
+.badge {
+  display: inline-flex;
+  padding: 5px 9px;
+  border-radius: 20px;
+  background: var(--soft);
+  color: var(--green);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.badge.limited {
+  background: #FFF0DC;
+  color: #79551D;
+}
+
+.restaurant-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 16px;
+  border-top: 1px solid #EDF0E9;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 42px;
+  padding: 9px 17px;
+  border: 1px solid var(--green);
+  border-radius: 25px;
+  background: var(--green);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.btn:hover { background: var(--deep); }
+
+@media (max-width: 900px) {
+.restaurant-grid { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 520px) {
+  .navbar { padding: 12px 16px; }
+  .nav-links { gap: 12px; }
+  .nav-links a { font-size: 11px; }
+  .wrap { padding: 0 14px; }
+  .restaurant-card { grid-template-columns: 105px minmax(0,1fr); }
+  .restaurant-visual { padding: 8px; }
+  .restaurant-info { padding: 17px 12px; }
+  .restaurant-title { font-size: 17px; }
+  .restaurant-description { font-size: 12px; }
+  .distance-line { padding-left: 8px; font-size: 10px; }
+  .badge { font-size: 10px; padding: 5px 7px; }
+}
+
+/* Keyboard focus remains visible without JavaScript. */
+a:focus-visible {
+  outline: 3px solid var(--orange);
+  outline-offset: 4px;
+}
+
+.navbar > a { color: var(--lime); }
+
+</style>
+</head>
+<body>
+
+<header class="navbar">
+  <a href="home.html" aria-label="BiteBuddy home">
+    <img src="bitebuddy-logo.png" class="logo-image" alt="BiteBuddy logo">
+  </a>
+
+  <nav class="nav-links" aria-label="Main navigation">
+    <a href="home.html">Home</a>
+    <a href="Create-Group.html">Create Group</a>
+    <a href="join-group.html">Join Group</a>
+    <a href="restaurants.html" class="active" aria-current="page">Restaurants</a>
+  </nav>
+</header>
+
+<main class="wrap">
+  <section class="page-heading">
+    <h1>Explore restaurants</h1>
+    <p>Discover restaurants, compare prices, and find food that fits your group's preferences.</p>
+  </section>
+
+  <p class="filter-note">
+    $ = cheap, $$ = moderate, $$$ = expensive.
+    Dietary options and allergy accommodations must be confirmed with each restaurant.
+  </p>
+
+  <div class="results-bar">
+    <strong>60 restaurants to explore</strong>
+  </div>
+
+  <!-- Static HTML: edit each restaurant's article directly. -->
+  <!-- All mileage values are retained from the previous page. -->
+  <!-- The ten additions use approximate straight-line miles from UMass Boston. -->
+  <div class="restaurant-grid" id="restaurantGrid">
+    <!-- Thelo Mediterranean -->
+    <article class="restaurant-card" id="thelo-mediterranean"
+      aria-labelledby="thelo-mediterranean-title"
+      data-address="860 Dorchester Ave, Dorchester, MA 02125"
+      data-price-min="13.99"
+      data-price-max="24.99"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#162f26">
+        <img src="https://cdn01.s4shops.com/skytabweb/uploads/aba7f03c-f689-f111-b337-000d3a7b73be/15c0c960-43b5-f111-a6a7-000d3a7d7da5.png"
+          alt="Thelo Mediterranean"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="thelo-mediterranean-title">Thelo Mediterranean</h2>
+        <p class="cuisine-meta">Mediterranean</p>
+        <p class="restaurant-description">Greek pitas, Mediterranean bowls, and grilled platters.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.2 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://thelomediterranean.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Dora Taqueria -->
+    <article class="restaurant-card" id="dora-taqueria"
+      aria-labelledby="dora-taqueria-title"
+      data-address="112 Stoughton St, Dorchester, MA 02125"
+      data-price-min="10.99"
+      data-price-max="15.99"
+      data-price-level="1"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#202a28">
+        <img src="https://dorataqueria.online/assets/dora/logo.png"
+          alt="Dora Taqueria"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="dora-taqueria-title">Dora Taqueria</h2>
+        <p class="cuisine-meta">Mexican</p>
+        <p class="restaurant-description">A Dorchester taqueria serving burritos, taco plates, and birria.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$</p>
+          <p class="distance-line">◎ 1.3 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://dorataqueria.online/locations/dorchester"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- The Chester Tavern -->
+    <article class="restaurant-card" id="the-chester-tavern"
+      aria-labelledby="the-chester-tavern-title"
+      data-address="1119 Dorchester Ave, Dorchester, MA 02125"
+      data-price-min="17"
+      data-price-max="32"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#f4f0e7">
+        <img src="https://images.getbento.com/accounts/e3e915f130a577ffbbc56b024fa61cc8/media/images/85696TheChester-Logo-Circle-dark.png?w=1000&amp;fit=max&amp;auto=compress,format&amp;cs=origin&amp;h=1000"
+          alt="The Chester Tavern"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="the-chester-tavern-title">The Chester Tavern</h2>
+        <p class="cuisine-meta">American</p>
+        <p class="restaurant-description">American tavern cooking with burgers, bowls, pasta, and dinner entrees.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.1 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.thechestertavern.com/menus/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- The Halal Fusion -->
+    <article class="restaurant-card" id="halal-fusion"
+      aria-labelledby="halal-fusion-title"
+      data-address="686 Morton St, Mattapan, MA 02126"
+      data-price-min="13.98"
+      data-price-max="17.98"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="no"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#fff9ee">
+        <img src="https://thehalalfusionboston.com/pluto-images/3bd953bc-e289-47a5-bfa7-5d748a422e31?w=1920&amp;fit=cover"
+          alt="The Halal Fusion"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="halal-fusion-title">The Halal Fusion</h2>
+        <p class="cuisine-meta">Mediterranean</p>
+        <p class="restaurant-description">Bowls, falafel pitas, and chicken meals in Mattapan.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.clover.com/online-ordering/the-halal-fusion-boston"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Shanti — Dorchester -->
+    <article class="restaurant-card" id="shanti-dorchester"
+      aria-labelledby="shanti-dorchester-title"
+      data-address="1111 Dorchester Avenue, Boston, MA 02125"
+      data-price-min="15"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://popmenucloud.com/cwlvubnt/ea921b3e-e032-422d-a14c-265e6c895b89.png"
+          alt="Shanti — Dorchester"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="shanti-dorchester-title">Shanti — Dorchester</h2>
+        <p class="cuisine-meta">Indian</p>
+        <p class="restaurant-description">Indian curries, biryani, tandoori dishes, and vegetable entrees.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.1 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.shantiboston.com/dorchester-menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Great Wok — Dorchester -->
+    <article class="restaurant-card" id="great-wok"
+      aria-labelledby="great-wok-title"
+      data-address="1284 Massachusetts Ave, Dorchester, MA 02125"
+      data-price-min="13.95"
+      data-price-max="16.95"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="no"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://imagedelivery.net/9lr8zq_Jvl7h6OFWqEi9IA/1b8ab327-1bcd-4182-05b4-181c5e0a6b00/public"
+          alt="Great Wok — Dorchester"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="great-wok-title">Great Wok — Dorchester</h2>
+        <p class="cuisine-meta">Chinese</p>
+        <p class="restaurant-description">Chinese takeout with rice, noodles, combination plates, and vegetable options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.4 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://order.greatwokma.com/order/main"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Just Thai Kitchen -->
+    <article class="restaurant-card" id="just-thai-kitchen"
+      aria-labelledby="just-thai-kitchen-title"
+      data-address="1512A Dorchester Ave, Dorchester, MA 02122"
+      data-price-min="10"
+      data-price-max="25"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSnXk9w_fz0yVazyR12XA5RszFedHb9GTW0gxeESCj6Bg&amp;s"
+          alt="Just Thai Kitchen"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="just-thai-kitchen-title">Just Thai Kitchen</h2>
+        <p class="cuisine-meta">Thai</p>
+        <p class="restaurant-description">Thai noodles, curries, fried rice, and vegetable dishes.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://justthaikitchen.com/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 224 Boston -->
+    <article class="restaurant-card" id="224-boston"
+      aria-labelledby="224-boston-title"
+      data-address="224 Boston St, Dorchester, MA 02125"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://lirp.cdn-website.com/77d3cd70/dms3rep/multi/opt/logo-copy-640w.png"
+          alt="224 Boston"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="224-boston-title">224 Boston</h2>
+        <p class="cuisine-meta">Italian</p>
+        <p class="restaurant-description">Italian-American comfort food, steaks, and seafood.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.224boston.com/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Venezia -->
+    <article class="restaurant-card" id="venezia"
+      aria-labelledby="venezia-title"
+      data-address="20 Ericsson St, Boston, MA 02122"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="yes"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://d2s742iet3d3t1.cloudfront.net/restaurants/restaurant-81927000000000000/restaurant_1635449651.png?size=small"
+          alt="Venezia"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="venezia-title">Venezia</h2>
+        <p class="cuisine-meta">Italian</p>
+        <p class="restaurant-description">Italian dining with outdoor seating and private dining.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.veneziaboston.com/menu-4"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Boston Fried Chicken -->
+    <article class="restaurant-card" id="boston-fried-chicken"
+      aria-labelledby="boston-fried-chicken-title"
+      data-address="340 Washington St, Dorchester, MA 02121"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes"
+      data-dietary-note="Confirm halal availability, vegetarian choices, ingredients, and shared-fryer practices with the restaurant.">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://media-cdn.grubhub.com/image/upload/d_search:browse-images:default.jpg/w_300,q_100,fl_lossy,dpr_2.0,c_fit,f_auto,h_300/weukpbfr4e1cj0imcnie"
+          alt="Boston Fried Chicken"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="boston-fried-chicken-title">Boston Fried Chicken</h2>
+        <p class="cuisine-meta">American · Chicken · Fast Food · Halal</p>
+        <p class="restaurant-description">Fried chicken, wings, sandwiches, fish, rice platters, salads, and sides.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge">✓ Halal options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.bostonfriedchickenma.com/dzkg7xih/boston-fried-chicken-dorchester-02124/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- The Dot Block Diner -->
+    <article class="restaurant-card" id="dot-block"
+      aria-labelledby="dot-block-title"
+      data-address="1203 Dorchester Ave #1, Dorchester, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="yes"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#162f26">
+        <img src="https://static-content.owner.com/f9bf3f80-6589-4f40-9c60-4d5e966fca81.png?h=56&amp;auto=format&amp;dpr=2"
+          alt="The Dot Block Diner"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="dot-block-title">The Dot Block Diner</h2>
+        <p class="cuisine-meta">American</p>
+        <p class="restaurant-description">Classic omelets, pancakes, sandwiches, burgers, seafood, and salads.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.2 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://dotblockdiner.com/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- P&amp;R Jamaican Restaurant and Ice Cream Parlor -->
+    <article class="restaurant-card" id="p-and-r"
+      aria-labelledby="p-and-r-title"
+      data-address="208 Dudley St, Boston, MA 02119"
+      data-price-min="1"
+      data-price-max="10"
+      data-price-level="1"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="limited"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.eatpandr.com/wp-content/uploads/2016/11/Logomakr_simple-logo-109x109.png"
+          alt="P&amp;R Jamaican Restaurant and Ice Cream Parlor"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="p-and-r-title">P&amp;R Jamaican Restaurant and Ice Cream Parlor</h2>
+        <p class="cuisine-meta">Jamaican</p>
+        <p class="restaurant-description">Caribbean classics, patties, tropical beverages, and homemade ice cream.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$</p>
+          <p class="distance-line">◎ 3.2 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.ubereats.com/store/p%26r-jamaican-restaurant-and-ice-cream-parlor/KPb5hKLWSyK8ujy-zrtENQ"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Pho Hoa -->
+    <article class="restaurant-card" id="pho-hoa-dorchester"
+      aria-labelledby="pho-hoa-dorchester-title"
+      data-address="1370 Dorchester Ave, Boston, MA 02122"
+      data-price-min="10"
+      data-price-max="25"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfF3MfN-68XfNqmTQrCZvx5b_E8Vr_xWeYTbyGCwYdnFT2PaNvjW-XnE3P&amp;s=10"
+          alt="Pho Hoa"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="pho-hoa-dorchester-title">Pho Hoa</h2>
+        <p class="cuisine-meta">Vietnamese</p>
+        <p class="restaurant-description">Vietnamese restaurant serving pho and other Vietnamese dishes.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.phohoarestaurant.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Estella -->
+    <article class="restaurant-card" id="estella-boston"
+      aria-labelledby="estella-boston-title"
+      data-address="49 Temple Pl, Boston, MA 02111"
+      data-price-min="14"
+      data-price-max="58"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown"
+      data-dietary-note="Confirm ingredients, preparation, and cross-contact directly with the restaurant.">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://images.getbento.com/accounts/9e7a581fbc26964c33eaa655e0a8b2b1/media/images/44346Estella_Restaurant.png"
+          alt="Estella"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="estella-boston-title">Estella</h2>
+        <p class="cuisine-meta">American · Caribbean · Fusion · International</p>
+        <p class="restaurant-description">A downtown Boston restaurant offering appetizers, pasta, seafood, and vegetarian options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 4.1 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.estellaboston.com/menus/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Chau Chow Restaurant -->
+    <article class="restaurant-card" id="chau-chow-dorchester"
+      aria-labelledby="chau-chow-dorchester-title"
+      data-address="699 Morrissey Blvd, Dorchester, MA 02122"
+      data-price-min="12"
+      data-price-max="35"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://imagedelivery.net/9lr8zq_Jvl7h6OFWqEi9IA/3bb8a938-d7e2-4aa9-77d0-c49fa6493500/public"
+          alt="Chau Chow Restaurant"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="chau-chow-dorchester-title">Chau Chow Restaurant</h2>
+        <p class="cuisine-meta">Chinese</p>
+        <p class="restaurant-description">Cantonese dishes, dim sum, seafood, and family-style meals.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.chauchowrestaurant.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- La Taqueria -->
+    <article class="restaurant-card" id="la-taqueria-dorchester"
+      aria-labelledby="la-taqueria-dorchester-title"
+      data-address="1132 Blue Hill Ave, Boston, MA 02124"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://images.squarespace-cdn.com/content/v1/5b27d708b98a78bacb64b6d2/bca3bdf9-02e2-452c-b421-6a076add1b49/Untitled+design+%282%29.png"
+          alt="La Taqueria"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="la-taqueria-dorchester-title">La Taqueria</h2>
+        <p class="cuisine-meta">Mexican</p>
+        <p class="restaurant-description">Mexican restaurant serving tacos, burritos, bowls, and quesadillas.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 4.8 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.lataqueriaboston.com/menu.html"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Gyu-Kaku Japanese BBQ -->
+    <article class="restaurant-card" id="gyu-kaku-south-bay"
+      aria-labelledby="gyu-kaku-south-bay-title"
+      data-address="23 District Ave, Dorchester, MA 02125"
+      data-price-min="30"
+      data-price-max="50"
+      data-price-level="3"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="yes"
+      data-diet-halal="unknown"
+      data-promotion="15% student discount — confirm current availability and restrictions.">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.gyu-kaku.com/wp-content/uploads/2017/11/restaurant_orl110117c-2048x1152.jpg"
+          alt="Gyu-Kaku Japanese BBQ"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="gyu-kaku-south-bay-title">Gyu-Kaku Japanese BBQ</h2>
+        <p class="cuisine-meta">Japanese · BBQ</p>
+        <p class="restaurant-description">Japanese barbecue where guests grill meats and vegetables at the table.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.gyu-kaku.com/southbay/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Kura Revolving Sushi Bar -->
+    <article class="restaurant-card" id="kura-revolving-sushi"
+      aria-labelledby="kura-revolving-sushi-title"
+      data-address="39A District Ave, Dorchester, MA 02125"
+      data-price-min="20"
+      data-price-max="50"
+      data-price-level="3"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://m.media-amazon.com/images/I/51APXODkJJL.jpg"
+          alt="Kura Revolving Sushi Bar"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="kura-revolving-sushi-title">Kura Revolving Sushi Bar</h2>
+        <p class="cuisine-meta">Japanese · Sushi</p>
+        <p class="restaurant-description">Revolving sushi, Japanese sides, and tablet ordering.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://kurasushi.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Sally&#x27;s Apizza -->
+    <article class="restaurant-card" id="sallys-apizza"
+      aria-labelledby="sallys-apizza-title"
+      data-address="9 District Ave, South Bay Shopping Center, Dorchester, MA 02125"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTkZy7QcEc7Uf60n0F9P6K7hiwEsAyzP0BipMH8nxEHruvtX6DQFbNf61s&amp;s=10"
+          alt="Sally&#x27;s Apizza"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="sallys-apizza-title">Sally&#x27;s Apizza</h2>
+        <p class="cuisine-meta">Italian · Pizza</p>
+        <p class="restaurant-description">Coal-fired pizza, specialty pies, salads, and starters.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://sallysapizza.com/menu/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- 110 Grill -->
+    <article class="restaurant-card" id="110-grill-south-bay"
+      aria-labelledby="110-grill-south-bay-title"
+      data-address="1 District Ave, Boston, MA 02125"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="yes"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ-hZFYSR_E-_yuWEaY425gW7hwS8Cw9S82dUdhJmNduMgaER8XBtmtUsca&amp;s=10"
+          alt="110 Grill"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="110-grill-south-bay-title">110 Grill</h2>
+        <p class="cuisine-meta">American</p>
+        <p class="restaurant-description">Modern American dining with burgers, salads, seafood, steaks, and dietary options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.110grill.com/newengland-menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Olive Garden -->
+    <article class="restaurant-card" id="olive-garden-south-bay"
+      aria-labelledby="olive-garden-south-bay-title"
+      data-address="11B Allstate Rd, Dorchester, MA 02125"
+      data-price-min="15"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.tastingtable.com/img/gallery/8-absolute-best-dishes-to-order-at-olive-garden/intro-1739990505.jpg"
+          alt="Olive Garden"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="olive-garden-south-bay-title">Olive Garden</h2>
+        <p class="cuisine-meta">Italian</p>
+        <p class="restaurant-description">Italian-American pasta, soups, salads, and family dining.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.olivegarden.com/locations/ma/dorchester/dorchester-south-bay-plaza/1674"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- La Famiglia Giorgio&#x27;s Restaurant -->
+    <article class="restaurant-card" id="la-famiglia-giorgios"
+      aria-labelledby="la-famiglia-giorgios-title"
+      data-address="112 Salem St, Boston, MA 02113"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://www.lafamigliagiorgios.com/images/logo.png"
+          alt="La Famiglia Giorgio&#x27;s restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="la-famiglia-giorgios-title">La Famiglia Giorgio&#x27;s Restaurant</h2>
+        <p class="cuisine-meta">Italian · Roman · Mediterranean</p>
+        <p class="restaurant-description">Family-friendly Italian restaurant in Boston&#x27;s North End, serving generous portions of classic Roman-style dishes, including pasta, ravioli, manicotti, eggplant parmigiana, pizza, and seafood. Offers a dedicated vegan menu and extensive gluten-free selections.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 4.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.lafamigliagiorgios.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- New Ho Toy -->
+    <article class="restaurant-card" id="new-ho-toy"
+      aria-labelledby="new-ho-toy-title"
+      data-address="746 Dudley St, Dorchester, MA 02125"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://ucarecdn.com/56319b43-ce6e-4781-b49f-5a15d5832838/-/format/auto/-/progressive/yes/New_Ho_Toy_logo_200x62.png"
+          alt="New Ho Toy Chinese restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="new-ho-toy-title">New Ho Toy</h2>
+        <p class="cuisine-meta">Chinese · Asian</p>
+        <p class="restaurant-description">Neighborhood Chinese restaurant serving familiar Chinese favorites, generous portions, combination plates, noodle dishes, crispy favorites, and family meals. Offers convenient takeout and pickup.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.newhotoydorchester.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Fiskie&#x27;s Indian Cafe -->
+    <article class="restaurant-card" id="fiskies-indian-cafe"
+      aria-labelledby="fiskies-indian-cafe-title"
+      data-address="27 Harbor Point Blvd, Dorchester, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="limited">
+      <div class="restaurant-visual" style="background:#b60012">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTfb5lyb8F9mhffcDjfdOAKk-mAv1IUq8wGePEmWrg4GA&amp;s"
+          alt="Fiskie&#x27;s Indian Cafe promotional image"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="fiskies-indian-cafe-title">Fiskie&#x27;s Indian Cafe</h2>
+        <p class="cuisine-meta">Indian</p>
+        <p class="restaurant-description">Enjoy flavorful Indian dishes, curries, rice dishes, and delicious favorites at Fiskie&#x27;s Indian Cafe in Dorchester.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Halal · limited</span>
+          <span class="badge">✓ Vegan options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.google.com/maps/search/?api=1&amp;query=Fiskies+Indian+Cafe+27+Harbor+Point+Blvd+Boston+MA"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Dave&#x27;s Hot Chicken -->
+    <article class="restaurant-card" id="daves-hot-chicken"
+      aria-labelledby="daves-hot-chicken-title"
+      data-address="10 District Ave C10, Dorchester, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://upload.wikimedia.org/wikipedia/en/f/ff/Dave%27s_Hot_Chicken_logo.png?utm_source=en.wikipedia.org&amp;utm_campaign=index&amp;utm_content=original"
+          alt="Dave&#x27;s Hot Chicken"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="daves-hot-chicken-title">Dave&#x27;s Hot Chicken</h2>
+        <p class="cuisine-meta">American · Chicken · Fast Food</p>
+        <p class="restaurant-description">Nashville-style hot chicken tenders, sliders, and bites.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge">✓ Halal options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://restaurants.daveshotchicken.com/ma/dorchester/10-district-ave.-c10-1109"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Yeanie&#x27;s -->
+    <article class="restaurant-card" id="yeanies"
+      aria-labelledby="yeanies-title"
+      data-address="39 Savin Hill Ave, Dorchester, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="no"
+      data-diet-gluten-free="no"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://images.squarespace-cdn.com/content/v1/66c76598a32bc5757c24a524/660564e2-3aae-4661-97ba-21b0d572e8de/YeaniesBAS_Logo-3_Yellow.png?format=1500w"
+          alt="Yeanie&#x27;s"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="yeanies-title">Yeanie&#x27;s</h2>
+        <p class="cuisine-meta">American</p>
+        <p class="restaurant-description">Smashburgers, fries, chicken sandwiches, milkshakes, and breakfast sandwiches.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.3 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.yeanies.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Bánh Mì Ba Lẹ &amp; Bakery -->
+    <article class="restaurant-card" id="ba-le"
+      aria-labelledby="ba-le-title"
+      data-address="1052 Dorchester Ave, Boston, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="http://balebanhmiboston.com/images/gallery/9.jpg"
+          alt="Bánh Mì Ba Lẹ &amp; Bakery"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="ba-le-title">Bánh Mì Ba Lẹ &amp; Bakery</h2>
+        <p class="cuisine-meta">Vietnamese</p>
+        <p class="restaurant-description">Vietnamese sandwiches, desserts, bubble tea, and coffee.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.6 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="http://balebanhmiboston.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Applebee&#x27;s Grill + Bar -->
+    <article class="restaurant-card" id="applebees-south-bay"
+      aria-labelledby="applebees-south-bay-title"
+      data-address="11A Allstate Road, South Bay Shopping Center, Dorchester, MA 02125"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown"
+      data-dietary-note="Confirm ingredients, allergens, and halal options directly with the restaurant.">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.allrecipes.com/thmb/qwKPsEwGUkfV8MOQFDRnmfr_bjY=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/ar-applebees-4x3-48854c9f3bc9429f8ed2aee2b44a82e7.jpg"
+          alt="Applebee&#x27;s Grill + Bar"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="applebees-south-bay-title">Applebee&#x27;s Grill + Bar</h2>
+        <p class="cuisine-meta">American · Burgers · Steak · Bar &amp; Grill</p>
+        <p class="restaurant-description">Casual American dining with burgers, pasta, steaks, appetizers, and desserts.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://restaurants.applebees.com/en-us/ma/dorchester/11a-allstate-road-81086"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- The Halal Guys -->
+    <article class="restaurant-card" id="the-halal-guys-south-bay"
+      aria-labelledby="the-halal-guys-south-bay-title"
+      data-address="10 District Ave, Unit C-15, Boston, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes"
+      data-dietary-note="Confirm allergens, ingredients, and preparation practices directly with the restaurant.">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://media-cdn.grubhub.com/image/upload/d_search:browse-images:default.jpg/w_300,q_100,fl_lossy,dpr_2.0,c_fit,f_auto,h_300/tlirgumsbe5dzp2tpreu"
+          alt="The Halal Guys"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="the-halal-guys-south-bay-title">The Halal Guys</h2>
+        <p class="cuisine-meta">Halal · Mediterranean · Middle Eastern · Fast Food</p>
+        <p class="restaurant-description">Halal chicken and gyro platters, pita sandwiches, falafel, rice, and signature sauces.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge limited">Vegan · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://thehalalguys.com/locations/10-district-ave-boston/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Thai Basil -->
+    <article class="restaurant-card" id="thai-basil"
+      aria-labelledby="thai-basil-title"
+      data-address="132 Newbury St, Suite B, Boston, MA 02116"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://static.spotapps.co/website_images/ab_websites/108477_website/logo.png"
+          alt="Thai Basil restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="thai-basil-title">Thai Basil</h2>
+        <p class="cuisine-meta">Thai · Asian</p>
+        <p class="restaurant-description">Thai restaurant serving flavorful traditional dishes with vegetarian and vegan options. Gluten-free choices are limited.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 4.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://thaibasilma.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Lotus &amp; Lime -->
+    <article class="restaurant-card" id="lotus-and-lime"
+      aria-labelledby="lotus-and-lime-title"
+      data-address="94 Shirley St, Roxbury, MA 02119"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://images.squarespace-cdn.com/content/v1/68f7b0f6513d4822f910244d/a2cd5f61-f7bf-470d-b65e-6f5f90d1f8d1/Lotus+%26+Lime+Logo.png?format=1500w"
+          alt="Lotus &amp; Lime restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="lotus-and-lime-title">Lotus &amp; Lime</h2>
+        <p class="cuisine-meta">Asian Fusion · Thai · Vietnamese · Southeast Asian</p>
+        <p class="restaurant-description">Fresh Southeast Asian-inspired bowls and salads featuring purple rice, leafy greens, crisp vegetables, seasonal fruit, slow-roasted chicken, Wagyu beef, and homemade signature sauces. Offers takeout, delivery, and catering.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://lotusandlime.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Palmita -->
+    <article class="restaurant-card" id="palmita-roxbury"
+      aria-labelledby="palmita-roxbury-title"
+      data-address="94 Shirley St, Roxbury, MA 02119"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://static1.squarespace.com/static/65f4be1e4199bc1cea1ac34c/t/660629076e9c0770667861b6/1711679756894/Artboard+22.png?format=1500w"
+          alt="Palmita Mexican bowls and fresh ingredients"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="palmita-roxbury-title">Palmita</h2>
+        <p class="cuisine-meta">Mexican · California Mexican · Mexican Fusion</p>
+        <p class="restaurant-description">Fresh Cal-Mex bowls and salads featuring seasoned tofu, shredded beef, pork, chicken, rice, black beans, corn, fresh vegetables, and homemade salsas. Offers vegetarian, vegan, and gluten-free options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://eatpalmita.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Doña Habana Restaurant -->
+    <article class="restaurant-card" id="dona-habana"
+      aria-labelledby="dona-habana-title"
+      data-address="811 Massachusetts Ave, Boston, MA 02118"
+      data-price-min="30"
+      data-price-max="80"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://donahabanarestaurant.com/wp-content/uploads/2017/05/DH_nav_logo_400_retina.png"
+          alt="Doña Habana Restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="dona-habana-title">Doña Habana Restaurant</h2>
+        <p class="cuisine-meta">Cuban · Caribbean · Latin American</p>
+        <p class="restaurant-description">Vibrant Cuban restaurant celebrating Cuba&#x27;s rich cultural heritage and traditional cuisine. Serves flavorful Cuban dishes in a colorful atmosphere with outdoor seating, private dining, and a variety of mojitos.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://donahabanarestaurant.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Saloniki Greek -->
+    <article class="restaurant-card" id="saloniki-greek"
+      aria-labelledby="saloniki-greek-title"
+      data-address="1330 Boylston St, Boston, MA 02215"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://static.wixstatic.com/media/df3f10_4c8dee0c61ad460086cf6a0804991dcf~mv2.png/v1/crop/x_0,y_106,w_1920,h_791/fill/w_332,h_132,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/df3f10_4c8dee0c61ad460086cf6a0804991dcf~mv2.png"
+          alt="Saloniki Greek restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="saloniki-greek-title">Saloniki Greek</h2>
+        <p class="cuisine-meta">Greek · Mediterranean</p>
+        <p class="restaurant-description">Modern Greek eatery from chef Jody Adams, serving customizable Greek plates, pitas, and fresh Mediterranean-inspired dishes. Vegetarian and vegan options are available, with limited gluten-free choices.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.salonikigreek.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Black Seed Halal Grill -->
+    <article class="restaurant-card" id="black-seed-halal-grill"
+      aria-labelledby="black-seed-halal-grill-title"
+      data-address="140 Tremont St, Boston, MA 02111"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="limited"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://static-content.owner.com/funnel/images/48a1998e-5bcc-4b50-b23f-0a371948af6c?v=7819070742&amp;h=56&amp;auto=format&amp;dpr=2"
+          alt="Black Seed Halal Grill restaurant image"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="black-seed-halal-grill-title">Black Seed Halal Grill</h2>
+        <p class="cuisine-meta">Middle Eastern · Mediterranean</p>
+        <p class="restaurant-description">Casual halal restaurant serving kebabs, falafel wraps, burgers, rice plates, pancakes, and omelets. Offers 100% certified halal meat, with vegetarian and vegan options. Gluten-free choices are limited and may require modifications.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://blackseedboston.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Halal Kitchen -->
+    <article class="restaurant-card" id="halal-kitchen-south-boston"
+      aria-labelledby="halal-kitchen-south-boston-title"
+      data-address="313 Old Colony Ave, Boston, MA 02127"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://media-cdn.grubhub.com/image/upload/d_search:browse-images:default.jpg/w_300,q_100,fl_lossy,dpr_2.0,c_fit,f_auto,h_300/zjn0cdviodrvkgvyanof"
+          alt="Halal Kitchen street food dishes"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="halal-kitchen-south-boston-title">Halal Kitchen</h2>
+        <p class="cuisine-meta">American · Middle Eastern · Halal · Street Food</p>
+        <p class="restaurant-description">Casual halal restaurant serving New York-style street food platters, wraps, falafel, hummus, rice dishes, and hot appetizers. Offers meat and vegetarian options, with limited vegan and gluten-free choices.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.doordash.com/store/halal-kitchen-south-boston-34411811/79708358/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Totto Ramen -->
+    <article class="restaurant-card" id="totto-ramen"
+      aria-labelledby="totto-ramen-title"
+      data-address="20A District Avenue, Boston, MA 02125"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="limited"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://images.squarespace-cdn.com/content/v1/601812300e957f6685ba7026/1612885493280-4MX1IZG5P2RBC8VAK8FK/Totto-Ramen-Logo-horiz-red-hat.png?format=1500w"
+          alt="Totto Ramen"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="totto-ramen-title">Totto Ramen</h2>
+        <p class="cuisine-meta">Japanese · Ramen</p>
+        <p class="restaurant-description">Japanese ramen restaurant in the South Bay area.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 1.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge limited">Vegetarian · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.tottoramen.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Ali Baba Restaurant &amp; Cafe -->
+    <article class="restaurant-card" id="ali-baba-restaurant-cafe"
+      aria-labelledby="ali-baba-restaurant-cafe-title"
+      data-address="145 E Berkeley St, Boston, MA 02118"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="yes"
+      data-diet-halal="yes"
+      data-rating="4.3">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.alibabasouthend.com/images/alibaba-logo.png"
+          alt="Ali Baba Restaurant &amp; Cafe logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="ali-baba-restaurant-cafe-title">Ali Baba Restaurant &amp; Cafe</h2>
+        <p class="cuisine-meta">Turkish · Mediterranean · Middle Eastern</p>
+        <p class="restaurant-description">A Turkish restaurant and cafe serving grilled kebabs, rice platters, and traditional favorites in Boston&#x27;s South End.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.alibabasouthend.com/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- NAYA -->
+    <article class="restaurant-card" id="naya-summer-street"
+      aria-labelledby="naya-summer-street-title"
+      data-address="95 Summer St, Boston, MA 02110"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="limited">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://media-cdn.grubhub.com/image/upload/d_search:browse-images:default.jpg/w_300,q_100,fl_lossy,dpr_2.0,c_fit,f_auto,h_300/gbyihfqc2majbqok4vid"
+          alt="NAYA Mediterranean food"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="naya-summer-street-title">NAYA</h2>
+        <p class="cuisine-meta">Mediterranean · Lebanese · Middle Eastern</p>
+        <p class="restaurant-description">Mediterranean bowls, rolls, and salads with chicken shawarma, chicken kebab, braised beef, lamb, falafel, and fresh toppings.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Halal · limited</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.eatnaya.com/the-menu/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Turkish Lazuri Cafe -->
+    <article class="restaurant-card" id="turkish-lazuri-cafe"
+      aria-labelledby="turkish-lazuri-cafe-title"
+      data-address="1 N Beacon St, Allston, MA 02134"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://lazuricafe.com/assets/images/d5cda99c7040dc6e774e1c05338c5877.png"
+          alt="Turkish Lazuri Cafe Turkish food and grilled kebabs"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="turkish-lazuri-cafe-title">Turkish Lazuri Cafe</h2>
+        <p class="cuisine-meta">Turkish · Mediterranean · Middle Eastern</p>
+        <p class="restaurant-description">Authentic Turkish cuisine featuring grilled kebabs, traditional dishes, appetizers, and desserts. The restaurant is 100% halal-certified and offers vegan options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 6.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://lazuricafe.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Crystal Spoons -->
+    <article class="restaurant-card" id="crystal-spoons"
+      aria-labelledby="crystal-spoons-title"
+      data-address="1950 Washington St, Boston, MA 02118"
+      data-price-min="20"
+      data-price-max="60"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://crystalspoonscuisine.com/wp-content/uploads/2025/03/cb9e25d8-b8ce-447b-acf6-1be9d769a5b2_Logo-4.png"
+          alt="Crystal Spoons restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="crystal-spoons-title">Crystal Spoons</h2>
+        <p class="cuisine-meta">Indian · South Asian</p>
+        <p class="restaurant-description">Elegant Indian restaurant serving authentic Indian cuisine, including Butter Chicken, Chicken Tikka Masala, Lamb Rogan Josh, paneer specialties, Malai Kofta, Yellow Dal Tadka, and traditional Indian appetizers. Uses 100% halal-certified meat and offers extensive vegetarian choices.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://crystalspoonscuisine.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Ashur Restaurant -->
+    <article class="restaurant-card" id="ashur-restaurant"
+      aria-labelledby="ashur-restaurant-title"
+      data-address="291 Roxbury St, Roxbury, MA 02119"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://platform.boston.eater.com/wp-content/uploads/sites/4/chorus/uploads/chorus_asset/file/6537789/IMG_2135.0.jpg?quality=90&amp;strip=all"
+          alt="Ashur Restaurant Somali rice and meat dishes"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="ashur-restaurant-title">Ashur Restaurant</h2>
+        <p class="cuisine-meta">Somali · African · Middle Eastern</p>
+        <p class="restaurant-description">A neighborhood halal restaurant serving Somali and Middle Eastern favorites, including goat biryani, lamb shank, chicken kebabs, rice platters, and vegetarian dishes.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.grubhub.com/restaurant/ashur-restaurant-291-roxbury-st-roxbury/339725"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Ariana Restaurant -->
+    <article class="restaurant-card" id="ariana-restaurant"
+      aria-labelledby="ariana-restaurant-title"
+      data-address="384 Western Ave, Boston, MA 02135"
+      data-price-min="30"
+      data-price-max="60"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://images.squarespace-cdn.com/content/v1/68f145bcaa92381eecf96ec8/cda8c4bc-e1bd-4843-8884-7edcde663e85/Untitled+design+%281%29.png?format=1500w"
+          alt="Ariana Restaurant Afghan cuisine"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="ariana-restaurant-title">Ariana Restaurant</h2>
+        <p class="cuisine-meta">Afghan · Middle Eastern</p>
+        <p class="restaurant-description">Traditional Afghan cuisine featuring lamb, kebabs, flavorful rice dishes, and vegetarian specialties. All dishes are halal, with vegan and gluten-free options available.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 5.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.arianarestaurantboston.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Boston Shawarma -->
+    <article class="restaurant-card" id="boston-shawarma"
+      aria-labelledby="boston-shawarma-title"
+      data-address="315 Huntington Ave, Boston, MA 02115"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.boston-shawarma.com/files/logo/logo.png"
+          alt="Boston Shawarma restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="boston-shawarma-title">Boston Shawarma</h2>
+        <p class="cuisine-meta">Middle Eastern · Mediterranean</p>
+        <p class="restaurant-description">Family-owned Mediterranean restaurant serving homemade shawarma, falafel, kebabs, and dolmas. Uses fresh ingredients and halal meats, prepared with traditional Mediterranean spices.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.boston-shawarma.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- New York Shawarma Guys -->
+    <article class="restaurant-card" id="new-york-shawarma-guys"
+      aria-labelledby="new-york-shawarma-guys-title"
+      data-address="83 Canal St, Boston, MA 02114"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://static.hungerrush.com/menufy/width=1024,height=1024,fit=scale-down,format=auto/638520758547770658+1439900.png"
+          alt="New York Shawarma Guys Mediterranean food"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="new-york-shawarma-guys-title">New York Shawarma Guys</h2>
+        <p class="cuisine-meta">Mediterranean · Middle Eastern · Shawarma</p>
+        <p class="restaurant-description">Casual Mediterranean restaurant serving marinated shawarma, fresh falafel, and authentic Middle Eastern favorites. Offers halal and vegetarian options, with takeout and catering available.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 4.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.ny-shawarmaguys.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Lavash Bar &amp; Grille -->
+    <article class="restaurant-card" id="lavash-bar-grille"
+      aria-labelledby="lavash-bar-grille-title"
+      data-address="26 New St, Cambridge, MA 02138"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://lh3.googleusercontent.com/gps-cs-s/ANWiy9Ry-tW9E5_dj4QZKcTNeUbV5nDpCvapsnD3_pJGgmDGSUQqTKkPynprj6nbJAGgFCFRtc8GKzowif_qW6p3sHVBSf6pgKzSfO3yOYk-wmmi9jthRTPKCk9-d5IwjUTyGLlQa6gMGJEFkWY=s680-w680-h510-rw"
+          alt="Turkish grilled kebabs served at Lavash Bar &amp; Grille"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="lavash-bar-grille-title">Lavash Bar &amp; Grille</h2>
+        <p class="cuisine-meta">Turkish · Mediterranean · Middle Eastern</p>
+        <p class="restaurant-description">Authentic Turkish and Eastern Mediterranean cuisine featuring grilled kebabs, lamb, chicken, beef, traditional meze, hummus, falafel, and Turkish desserts. All meats are halal-certified, with vegetarian, vegan, and gluten-free options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 8.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://lavashboston.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- NACHLO -->
+    <article class="restaurant-card" id="nachlo-roxbury"
+      aria-labelledby="nachlo-roxbury-title"
+      data-address="1443 Tremont St, Roxbury, MA 02120"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="limited"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://nachloeats.com/pluto-images/funnel/images/a6566d39-70d1-4b6d-a80c-2bcd459ffe6a?w=64&amp;h=64&amp;dpr=2&amp;fit=cover"
+          alt="NACHLO Pakistani and Mexican fusion dishes"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="nachlo-roxbury-title">NACHLO</h2>
+        <p class="cuisine-meta">Pakistani · Mexican · Fusion</p>
+        <p class="restaurant-description">A halal fusion eatery combining Pakistani favorites, such as chapli kebabs, with Mexican-inspired street food, including fully loaded nachos and creative fusion dishes.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://nachloeats.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- The Silk - Indian Restaurant &amp; Bar -->
+    <article class="restaurant-card" id="the-silk-brookline"
+      aria-labelledby="the-silk-brookline-title"
+      data-address="1223 Beacon St, Brookline, MA 02446"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://assets.choosepos.com/website-media/6a62ce27aef67d87453394cd/478278b2abe812d3ab5d7690.png"
+          alt="The Silk Indian Restaurant and Bar logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="the-silk-brookline-title">The Silk - Indian Restaurant &amp; Bar</h2>
+        <p class="cuisine-meta">Indian · South Asian · Modern Indian</p>
+        <p class="restaurant-description">Modern Indian cuisine featuring traditional Indian dishes, with a wide selection of vegetarian and vegan options. The restaurant states that its meat and dishes are halal. Please note that the venue also has a full-service bar serving alcoholic cocktails.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 5.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.thesilkboston.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Thai Oishi -->
+    <article class="restaurant-card" id="thai-oishi"
+      aria-labelledby="thai-oishi-title"
+      data-address="203 Adams St, Boston, MA 02122"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://static.wixstatic.com/media/b87ced_c42cd96d5f2640bd8d5aee14c0796665~mv2.png/v1/fill/w_304,h_238,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/Thai-Oishi-logo-ann.png"
+          alt="Thai Oishi restaurant logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="thai-oishi-title">Thai Oishi</h2>
+        <p class="cuisine-meta">Thai · Asian</p>
+        <p class="restaurant-description">Thai restaurant serving traditional Thai dishes in a cozy dining atmosphere, with vegetarian options available.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.thaioishiboston.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Cafe Polonia -->
+    <article class="restaurant-card" id="cafe-polonia"
+      aria-labelledby="cafe-polonia-title"
+      data-address="611 Dorchester Ave, Boston, MA 02127"
+      data-price-min="20"
+      data-price-max="30"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="no">
+      <div class="restaurant-visual" style="background:#222326">
+        <img src="https://cafepolonia.com/wp-content/uploads/2025/08/cafe_polonia_logo_vector_orig_w_350_shadow.png"
+          alt="Cafe Polonia"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="cafe-polonia-title">Cafe Polonia</h2>
+        <p class="cuisine-meta">Polish</p>
+        <p class="restaurant-description">Polish comfort food, pierogi, kielbasa, and potato pancakes.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 1.9 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://cafepolonia.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- My Thai Vegan Cafe -->
+    <article class="restaurant-card" id="my-thai-vegan-cafe"
+      aria-labelledby="my-thai-vegan-cafe-title"
+      data-address="3 Beach St, 2nd Floor, Boston, MA 02111"
+      data-price-min="15"
+      data-price-max="27"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://images.squarespace-cdn.com/content/v1/5e6bf362d6fbb12ff2a75899/1594401501092-1RIB6NL9BFEJAQQRK0D8/Logo.png"
+          alt="My Thai Vegan Cafe logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="my-thai-vegan-cafe-title">My Thai Vegan Cafe</h2>
+        <p class="cuisine-meta">Thai · Vegan</p>
+        <p class="restaurant-description">Vegan Thai curries, noodles, fried rice, tofu, and vegetable-based meat alternatives.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://mythaivegancafe.toast.site/menu/mythaivegancafe"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Tribos Peri Peri -->
+    <article class="restaurant-card" id="tribos-peri-peri-somerville"
+      aria-labelledby="tribos-peri-peri-somerville-title"
+      data-address="431 Artisan Way, Somerville, MA 02145"
+      data-price-min="12"
+      data-price-max="25"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.ezcater.com/db_images/show_img/286742"
+          alt="Tribos Peri Peri logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="tribos-peri-peri-somerville-title">Tribos Peri Peri</h2>
+        <p class="cuisine-meta">Portuguese · Chicken · Halal</p>
+        <p class="restaurant-description">Flame-grilled peri-peri chicken, wings, rice bowls, and wraps.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 6.1 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge limited">Vegan · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://tribosperiperi.com/menu/somerville-ma"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Taco Bell -->
+    <article class="restaurant-card" id="taco-bell-south-boston"
+      aria-labelledby="taco-bell-south-boston-title"
+      data-address="449 West Broadway, Boston, MA 02127"
+      data-price-min="5"
+      data-price-max="15"
+      data-price-level="1"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="no"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.ezcater.com/db_images/show_img/290848"
+          alt="Taco Bell logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="taco-bell-south-boston-title">Taco Bell</h2>
+        <p class="cuisine-meta">Mexican · Tex-Mex · Fast Food</p>
+        <p class="restaurant-description">Mexican-inspired tacos, burritos, quesadillas, nachos, and vegetarian options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$</p>
+          <p class="distance-line">◎ 1.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.tacobell.com/food"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- CAVA -->
+    <article class="restaurant-card" id="cava-summer-street"
+      aria-labelledby="cava-summer-street-title"
+      data-address="125 Summer St, Boston, MA 02111"
+      data-price-min="12"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="limited">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://companieslogo.com/img/orig/CAVA-59246a5f.png?t=1720244491"
+          alt="CAVA logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="cava-summer-street-title">CAVA</h2>
+        <p class="cuisine-meta">Mediterranean · Greek</p>
+        <p class="restaurant-description">Mediterranean bowls and pitas with grains, greens, hummus, falafel, and fresh toppings.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.0 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Halal · limited</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://cava.com/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Sufra -->
+    <article class="restaurant-card" id="sufra-mediterranean-food"
+      aria-labelledby="sufra-mediterranean-food-title"
+      data-address="52 Queensberry St, Boston, MA 02215"
+      data-price-min="13"
+      data-price-max="25"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="limited"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.ezcater.com/db_images/show_img/214174"
+          alt="Sufra logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="sufra-mediterranean-food-title">Sufra</h2>
+        <p class="cuisine-meta">Mediterranean · Middle Eastern</p>
+        <p class="restaurant-description">Mediterranean shawarma wraps, falafel plates, hummus, salads, and flatbreads.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://suframediterraneanfood.com/menu"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Crispy Dough Pizzeria -->
+    <article class="restaurant-card" id="crispy-dough-pizzeria"
+      aria-labelledby="crispy-dough-pizzeria-title"
+      data-address="1514 Tremont St, Boston, MA 02120"
+      data-price-min="12"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="unknown"
+      data-diet-gluten-free="unknown"
+      data-diet-halal="yes">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.zabihah.com/_next/image?q=75&amp;url=https%3A%2F%2Fmolmcuxhcqubtpydpxuo.supabase.co%2Fstorage%2Fv1%2Fobject%2Fpublic%2Frestaurants%2Flegacy%2Fplace%2Fcaa54776-7767-11ef-95ae-6045bdeb9f57%2Ficon-b5657c3c-144e37ac-648c-4cdb-bcc5-0f683f255abb.jpeg&amp;w=256"
+          alt="Crispy Dough Pizzeria logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="crispy-dough-pizzeria-title">Crispy Dough Pizzeria</h2>
+        <p class="cuisine-meta">Italian · Pizza</p>
+        <p class="restaurant-description">Specialty pizzas, calzones, subs, pasta, salads, and dinner plates.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.5 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Halal options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://www.crispydoughpizzamenu.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- bartaco -->
+    <article class="restaurant-card" id="bartaco-seaport"
+      aria-labelledby="bartaco-seaport-title"
+      data-address="25 Thomson Pl, Boston, MA 02210"
+      data-price-min="15"
+      data-price-max="30"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://www.ezcater.com/db_images/show_img/287726"
+          alt="bartaco logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="bartaco-seaport-title">bartaco</h2>
+        <p class="cuisine-meta">Mexican · Tacos</p>
+        <p class="restaurant-description">Tacos, rice bowls, guacamole, and shareable sides.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.7 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://bartaco.com/location/seaport/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- El Jefe&#x27;s Taqueria -->
+    <article class="restaurant-card" id="el-jefes-taqueria-boston-common"
+      aria-labelledby="el-jefes-taqueria-boston-common-title"
+      data-address="80 Boylston St, Boston, MA 02116"
+      data-price-min="10"
+      data-price-max="20"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="yes"
+      data-diet-gluten-free="yes"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://harvardsquare.com/wp-content/uploads/2025/09/el-fefes-logo.jpg"
+          alt="El Jefe&#x27;s Taqueria logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="el-jefes-taqueria-boston-common-title">El Jefe&#x27;s Taqueria</h2>
+        <p class="cuisine-meta">Mexican</p>
+        <p class="restaurant-description">Mexican burritos, bowls, and tacos with vegetarian and vegan options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 3.1 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge">✓ Vegan options</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://eljefestaqueria.com/"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- The Cheesecake Factory -->
+    <article class="restaurant-card" id="cheesecake-factory-prudential"
+      aria-labelledby="cheesecake-factory-prudential-title"
+      data-address="115 Huntington Ave, Suite 181, Boston, MA 02199"
+      data-price-min="20"
+      data-price-max="40"
+      data-price-level="3"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="yes"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/9c/CheesecakeFactoryLogo1.png"
+          alt="The Cheesecake Factory logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="cheesecake-factory-prudential-title">The Cheesecake Factory</h2>
+        <p class="cuisine-meta">American · Desserts</p>
+        <p class="restaurant-description">Casual American dining with pasta, burgers, salads, seafood, and cheesecake.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$$</p>
+          <p class="distance-line">◎ 3.3 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge">✓ Gluten-free options</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://locations.thecheesecakefactory.com/ma/boston-52.html"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+
+    <!-- Shake Shack -->
+    <article class="restaurant-card" id="shake-shack-seaport"
+      aria-labelledby="shake-shack-seaport-title"
+      data-address="77 Seaport Blvd, Boston, MA 02210"
+      data-price-min="10"
+      data-price-max="25"
+      data-price-level="2"
+      data-diet-vegetarian="yes"
+      data-diet-vegan="limited"
+      data-diet-gluten-free="limited"
+      data-diet-halal="unknown">
+      <div class="restaurant-visual" style="background:#ffffff">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/9/96/Shake_Shack_logo.svg"
+          alt="Shake Shack logo"
+          decoding="async">
+      </div>
+
+      <div class="restaurant-info">
+        <h2 class="restaurant-title" id="shake-shack-seaport-title">Shake Shack</h2>
+        <p class="cuisine-meta">American · Burgers · Fast Food</p>
+        <p class="restaurant-description">Burgers, chicken sandwiches, crinkle-cut fries, shakes, and vegetarian options.</p>
+
+        <div class="restaurant-facts">
+          <p class="price-line">$$</p>
+          <p class="distance-line">◎ 2.8 mi</p>
+        </div>
+
+        <div class="tags">
+          <span class="badge">✓ Vegetarian options</span>
+          <span class="badge limited">Vegan · limited</span>
+          <span class="badge limited">Gluten-free · limited</span>
+        </div>
+
+        <div class="restaurant-actions">
+          <a class="btn" href="https://shakeshack.com/location/boston-seaport-ma"
+            target="_blank" rel="noopener noreferrer">
+            View menu ↗
+          </a>
+        </div>
+      </div>
+    </article>
+  </div>
+</main>
+
+</body>
+</html>
