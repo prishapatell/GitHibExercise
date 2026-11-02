@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>BiteBuddy - Join Group</title>
+
+    <!-- QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        :root {
+            --dark-green: #003D2E;
+            --dark-green-2: #002F24;
+            --lime: #8AF23A;
+            --orange: #FF6B3D;
+            --cream: #F8F6EF;
+            --white: #FFFFFF;
+            --light-green: #E9F8D9;
+            --light-orange: #FDE3D6;
+            --text-dark: #16352C;
+            --text-gray: #68766F;
+            --border: #DDE9E1;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: var(--cream);
+            color: var(--text-dark);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* NAVIGATION */
+
+        .navbar {
+            min-height: 76px;
+            background-color: var(--dark-green);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 50px;
+            gap: 20px;
+        }
+
+        .logo-image {
+            width: 105px;
+            height: 55px;
+            object-fit: contain;
+            display: block;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #DCE8E1;
+            font-size: 13px;
+            transition: 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--lime);
+        }
+
+        .nav-links .active {
+            color: var(--lime);
+            font-weight: bold;
+        }
+
+        /* MAIN CONTENT */
+
+        .main-container {
+            width: 100%;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 60px 30px 45px;
+            flex: 1;
+        }
+
+        .page-header {
+            text-align: center;
+            margin-bottom: 38px;
+        }
+
+        .page-header h1 {
+            font-size: 38px;
+            color: var(--dark-green);
+            margin-bottom: 12px;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            color: var(--text-gray);
+            line-height: 1.5;
+        }
+
+        /* JOIN CARD */
+
+        .join-card {
+            max-width: 650px;
+            margin: 0 auto;
+            background-color: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 22px;
+            padding: 42px;
+            box-shadow: 0 8px 25px rgba(0, 61, 46, 0.06);
+        }
+
+        .join-card h2 {
+            font-size: 23px;
+            color: var(--dark-green);
+            margin-bottom: 12px;
+        }
+
+        .description {
+            font-size: 14px;
+            line-height: 1.7;
+            color: var(--text-gray);
+            margin-bottom: 32px;
+        }
+
+        /* INVITE CODE INPUT */
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: bold;
+            color: var(--text-dark);
+            margin-bottom: 10px;
+        }
+
+        .invite-input {
+            width: 100%;
+            height: 60px;
+            padding: 0 19px;
+            border: 1px solid #D8DCD6;
+            border-radius: 13px;
+            outline: none;
+            font-size: 17px;
+            color: var(--text-dark);
+            background-color: white;
+            text-transform: uppercase;
+        }
+
+        .invite-input:focus {
+            border-color: var(--dark-green);
+            box-shadow: 0 0 0 3px rgba(0, 61, 46, 0.10);
+        }
+
+        /* JOIN BUTTON */
+
+        .join-btn {
+            width: 100%;
+            min-height: 56px;
+            margin-top: 22px;
+            border: none;
+            border-radius: 30px;
+            background-color: var(--orange);
+            color: white;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .join-btn:hover {
+            background-color: #E95C35;
+            transform: translateY(-1px);
+        }
+
+        /* DIVIDER */
+
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin: 30px 0;
+            color: #9A9F9B;
+            font-size: 13px;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: var(--border);
+        }
+
+        /* QR SCANNER SECTION */
+
+        .qr-option {
+            text-align: center;
+            padding: 27px 22px;
+            background-color: var(--light-green);
+            border-radius: 16px;
+        }
+
+        .qr-option h3 {
+            color: var(--dark-green);
+            font-size: 19px;
+            margin-bottom: 10px;
+        }
+
+        .qr-option p {
+            color: var(--text-gray);
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        .scan-btn {
+            display: inline-block;
+            width: 100%;
+            max-width: 340px;
+            min-height: 49px;
+            margin-top: 20px;
+            padding: 13px 20px;
+            border: none;
+            border-radius: 26px;
+            background-color: var(--dark-green);
+            color: white;
+            font-size: 14px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .scan-btn:hover {
+            background-color: var(--dark-green-2);
+            color: var(--lime);
+        }
+
+        .scan-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #qr-reader {
+            display: none;
+            width: 100%;
+            max-width: 380px;
+            margin: 22px auto 0;
+            overflow: hidden;
+            border-radius: 12px;
+            background: white;
+        }
+
+        #qr-reader video {
+            border-radius: 10px;
+        }
+
+        #scan-status {
+            margin-top: 14px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--dark-green);
+            overflow-wrap: anywhere;
+        }
+
+        .stop-btn {
+            display: inline-block;
+            margin-top: 14px;
+            padding: 10px 23px;
+            border: 1px solid var(--border);
+            border-radius: 25px;
+            background-color: white;
+            color: var(--dark-green);
+            font-size: 13px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .stop-btn:hover {
+            background-color: var(--light-orange);
+        }
+
+        .stop-btn[hidden] {
+            display: none;
+        }
+
+        /* SUCCESS / ERROR MESSAGE */
+
+        #joinMessage {
+            display: none;
+            margin-top: 22px;
+            padding: 16px;
+            background-color: var(--light-green);
+            border-left: 4px solid var(--dark-green);
+            border-radius: 8px;
+            color: var(--dark-green);
+            font-size: 14px;
+            line-height: 1.7;
+            overflow-wrap: anywhere;
+        }
+
+        #joinMessage.error {
+            background-color: var(--light-orange);
+            border-left-color: var(--orange);
+        }
+
+        /* BOTTOM CONTINUE BUTTON */
+
+        .bottom-progress {
+            width: 100%;
+            padding: 22px 5%;
+            margin-top: auto;
+            display: flex;
+            justify-content: flex-end;
+            align-items: center;
+            background-color: var(--cream);
+        }
+
+        .continue-btn {
+            display: inline-block;
+            padding: 15px 28px;
+            background-color: var(--dark-green);
+            color: white;
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 30px;
+            transition: 0.2s;
+        }
+
+        .continue-btn:hover {
+            background-color: var(--dark-green-2);
+            color: var(--lime);
+        }
+
+        /* MOBILE RESPONSIVENESS */
+
+        @media (max-width: 600px) {
+            .navbar {
+                padding: 12px 18px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+
+            .logo-image {
+                width: 85px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 14px;
+            }
+
+            .nav-links a {
+                font-size: 12px;
+            }
+
+            .main-container {
+                padding: 38px 18px;
+            }
+
+            .page-header h1 {
+                font-size: 28px;
+            }
+
+            .page-header p {
+                font-size: 14px;
+            }
+
+            .join-card {
+                padding: 25px 20px;
+                border-radius: 17px;
+            }
+
+            .join-card h2 {
+                font-size: 21px;
+            }
+
+            .qr-option {
+                padding: 23px 15px;
+            }
+
+            .bottom-progress {
+                padding: 20px;
+            }
+
+            .continue-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    
+        /* Additional phone and small-tablet refinements */
+        img, canvas, video { max-width: 100%; }
+        input, select, textarea, button, a { -webkit-tap-highlight-color: transparent; }
+        .invite-input { width: 100%; min-width: 0; font-size: 16px; }
+        .join-card, .qr-option, .main-container { min-width: 0; }
+        .join-btn, .scan-btn, .stop-btn, .continue-btn { min-height: 46px; }
+        #reader, #qr-reader, #qr-reader__scan_region, #qr-reader video { max-width: 100%; }
+        @media (max-width: 600px) {
+            .navbar { flex-direction: column; align-items: center; gap: 8px; }
+            .logo-area { justify-content: center; }
+            .nav-links { width: 100%; justify-content: center; flex-wrap: wrap; gap: 4px 12px; }
+            .nav-links a { display: inline-flex; align-items: center; min-height: 44px; font-size: 12px; }
+            .main-container { width: 100%; padding: 28px 14px 30px; }
+            .page-header { margin-bottom: 24px; }
+            .page-header h1 { font-size: clamp(25px, 6vw, 30px); line-height: 1.2; overflow-wrap: anywhere; }
+            .page-header p { line-height: 1.5; }
+            .join-card { width: 100%; padding: 20px 15px; border-radius: 16px; }
+            .join-card h2 { line-height: 1.25; }
+            .invite-input { min-height: 46px; }
+            .join-btn, .scan-btn, .stop-btn, .continue-btn { width: 100%; min-height: 48px; }
+            .qr-option { padding: 20px 12px; }
+            .bottom-progress { padding: 16px 12px; }
+            .continue-btn { display: flex; align-items: center; justify-content: center; text-align: center; }
+            #reader, #qr-reader { width: 100% !important; }
+            #qr-reader__dashboard_section_csr button, #qr-reader button { min-height: 44px; }
+        }
+        @media (max-width: 380px) {
+            .main-container { padding-inline: 10px; }
+            .join-card { padding: 17px 12px; }
+            .nav-links { column-gap: 8px; }
+            .nav-links a { font-size: 11px; }
+        }
+
+    </style>
+<style>[hidden]{display:none !important}</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<script src="bitebuddy-backend.js"></script>
+    <link rel="stylesheet" href="bitebuddy-ui.css">
+    <script src="bitebuddy-ui.js" defer></script>
+</head>
+
+<body>
+
+    <!-- NAVIGATION -->
+
+    <header class="navbar">
+
+        <div class="logo-area">
+            <a href="home.html">
+                <img
+                    src="images/bitebuddy-logo.png"
+                    class="logo-image"
+                    alt="BiteBuddy logo"
+                >
+            </a>
+        </div>
+
+        <nav class="nav-links">
+            <a href="home.html">Home</a>
+            <a href="Create-Group.html">Create Group</a>
+            <a href="join-group.html" class="active">Join Group</a>
+            <a href="restaurants.html">Restaurants</a>
+        </nav>
+
+    </header>
+
+    <!-- MAIN CONTENT -->
+
+    <main class="main-container">
+
+        <div class="page-header">
+            <h1>Join a dining group</h1>
+            <p>Enter the invite code your friend shared with you.</p>
+        </div>
+
+        <!-- JOIN CARD -->
+
+        <section class="join-card">
+
+            <h2>Join your friends</h2>
+
+            <p class="description">
+                Use the invite code from your group creator to join
+                the dining group and start sharing your preferences.
+            </p>
+
+            <label for="guestName">Your name</label>
+            <input type="text" id="guestName" class="invite-input"
+                   placeholder="Enter your name" maxlength="40" autocomplete="nickname"
+                   style="text-transform:none;margin-bottom:20px">
+
+            <!-- INVITE CODE -->
+
+            <label for="inviteCode">Invite code</label>
+
+            <input
+                type="text"
+                id="inviteCode"
+                class="invite-input"
+                placeholder="Example: BITE-12AB34CD"
+                maxlength="13"
+                autocomplete="off"
+                aria-describedby="joinMessage"
+            >
+
+            <!-- JOIN BUTTON -->
+
+            <button
+                type="button"
+                class="join-btn"
+                onclick="joinGroup()"
+            >
+                Join Group
+            </button>
+
+            <!-- DIVIDER -->
+
+            <div class="divider">OR</div>
+
+            <!-- LIVE QR SCANNER -->
+
+            <div class="qr-option">
+
+                <h3>Scan a QR code</h3>
+
+                <p>
+                    Scan your friend's BiteBuddy group QR code
+                    using your camera to enter the invite code automatically.
+                </p>
+
+                <button
+                    type="button"
+                    id="scan-btn"
+                    class="scan-btn"
+                    onclick="startQRScanner()"
+                >
+                    &#128247; Open Camera &amp; Scan
+                </button>
+
+                <div id="qr-reader"></div>
+
+                <p id="scan-status" aria-live="polite"></p>
+
+                <button
+                    type="button"
+                    id="stop-scan-btn"
+                    class="stop-btn"
+                    onclick="stopQRScanner()"
+                    hidden
+                >
+                    Stop Scanner
+                </button>
+
+            </div>
+
+            <!-- SUCCESS / ERROR MESSAGE -->
+
+            <div id="joinMessage" role="status" aria-live="polite"></div>
+
+        </section>
+
+    </main>
+
+    <!-- CONTINUE TO PREFERENCES -->
+
+    <section class="bottom-progress">
+        <a href="preferences.html" id="continueFromJoin" class="continue-btn" hidden>
+            Continue to Preferences &rarr;
+        </a>
+    </section>
+
+    <!-- JAVASCRIPT -->
+
+    <script>
+        let qrScanner = null;
+        let scannerRunning = false;
+        let scanCompleted = false;
+
+        const inviteInput = document.getElementById("inviteCode");
+        const scanButton = document.getElementById("scan-btn");
+        const stopButton = document.getElementById("stop-scan-btn");
+        const scanStatus = document.getElementById("scan-status");
+        const qrReader = document.getElementById("qr-reader");
+        const joinMessage = document.getElementById("joinMessage");
+
+        // Display a message to the user.
+
+        function showMessage(message, isError = false) {
+            joinMessage.textContent = message;
+            joinMessage.style.display = "block";
+            joinMessage.classList.toggle("error", isError);
+        }
+
+        // Read the invite code from a QR code.
+        // Accepts BITE-482 or a URL containing ?code=BITE-482.
+
+        function extractInviteCode(decodedText) {
+            const text = decodedText.trim();
+            let code = text;
+
+            if (/^https?:\/\//i.test(text)) {
+                try {
+                    const url = new URL(text);
+                    code = url.searchParams.get("code") || "";
+                } catch (error) {
+                    return null;
+                }
+            }
+
+            code = code.trim().toUpperCase();
+
+            return /^BITE-[A-Z0-9]{3,8}$/.test(code)
+                ? code
+                : null;
+        }
+
+        // Start the live camera scanner.
+
+        async function startQRScanner() {
+            if (scannerRunning) return;
+
+            if (!window.isSecureContext) {
+                scanStatus.textContent =
+                    "Camera access requires a secure HTTPS website.";
+                return;
+            }
+
+            if (typeof Html5Qrcode === "undefined") {
+                scanStatus.textContent =
+                    "The QR scanner could not load. Check your internet connection and refresh the page.";
+                return;
+            }
+
+            scanCompleted = false;
+            scanButton.disabled = true;
+            scanStatus.textContent =
+                "Starting camera. Please allow camera access.";
+
+            qrReader.style.display = "block";
+            stopButton.hidden = false;
+
+            try {
+                qrScanner = new Html5Qrcode("qr-reader");
+
+                await qrScanner.start(
+                    { facingMode: "environment" },
+                    {
+                        fps: 10,
+                        qrbox: {
+                            width: 220,
+                            height: 220
+                        },
+                        aspectRatio: 1
+                    },
+                    async function(decodedText) {
+                        if (scanCompleted) return;
+
+                        const code = extractInviteCode(decodedText);
+
+                        if (!code) {
+                            scanStatus.textContent =
+                                "This QR code does not contain a valid BiteBuddy invite code.";
+                            return;
+                        }
+
+                        scanCompleted = true;
+                        inviteInput.value = code;
+
+                        scanStatus.textContent =
+                            "Invite code scanned successfully: " + code;
+
+                        await stopQRScanner(true);
+
+                        inviteInput.focus();
+                        showMessage(
+                            "QR code scanned! Your invite code is " +
+                            code +
+                            ". Click Join Group to continue."
+                        );
+                    },
+                    function(errorMessage) {
+                        // No action is needed for each unsuccessful scan frame.
+                    }
+                );
+
+                scannerRunning = true;
+                scanStatus.textContent =
+                    "Camera is active. Point it at your friend's QR code.";
+
+            } catch (error) {
+                qrReader.style.display = "none";
+                stopButton.hidden = true;
+                scanButton.disabled = false;
+                scannerRunning = false;
+
+                scanStatus.textContent =
+                    "Could not open the camera. Allow camera permission and try again.";
+
+                console.error("QR scanner error:", error);
+
+                if (qrScanner) {
+                    try {
+                        await qrScanner.clear();
+                    } catch (cleanupError) {
+                        console.error(cleanupError);
+                    }
+
+                    qrScanner = null;
+                }
+            }
+        }
+
+        // Stop the camera and clean up the scanner.
+
+        async function stopQRScanner(keepMessage = false) {
+            if (qrScanner) {
+                try {
+                    if (scannerRunning) {
+                        await qrScanner.stop();
+                    }
+                } catch (error) {
+                    console.error("Error stopping scanner:", error);
+                }
+
+                try {
+                    await qrScanner.clear();
+                } catch (error) {
+                    console.error("Error clearing scanner:", error);
+                }
+            }
+
+            qrScanner = null;
+            scannerRunning = false;
+            scanCompleted = false;
+
+            qrReader.style.display = "none";
+            stopButton.hidden = true;
+            scanButton.disabled = false;
+
+            if (!keepMessage) {
+                scanStatus.textContent = "Scanner stopped.";
+            }
+        }
+
+        // Validate the invite against Supabase and atomically join the actual group.
+        async function joinGroup() {
+          const code = inviteInput.value.trim().toUpperCase();
+          inviteInput.value = code;
+          if (!/^BITE-[A-Z0-9]{3,8}$/.test(code)) {
+            showMessage('Enter a valid group invite code, such as BITE-12AB34CD.', true);
+            return;
+          }
+          const btn = document.querySelector('.join-btn');
+          btn.disabled = true;
+          showMessage('Checking invite and joining your group…');
+          try {
+            const name = document.getElementById('guestName').value.trim();
+            if (!name || name.length > 40) throw new Error('Enter your name (1–40 characters).');
+            const group = await BiteBuddy.joinGroup(code, name);
+            showMessage(`You joined ${group.name}! Opening your preferences…`);
+            await new Promise(resolve => setTimeout(resolve, 650));
+            window.location.href = 'preferences.html';
+          } catch (error) {
+            console.error(error);
+            showMessage(`Could not join: ${error.message}`, true);
+          } finally { btn.disabled = false; }
+        }
+
+        document.getElementById('guestName').value = localStorage.getItem('bitebuddyGuestName') || '';
+        // Prefill from copied invite links and QR scans.
+        const incomingCode = new URLSearchParams(window.location.search).get('code');
+        if (incomingCode) inviteInput.value = incomingCode.trim().toUpperCase();
+
+        // Allow Enter to submit the invite code.
+
+        inviteInput.addEventListener("keydown", function(event) {
+            if (event.key === "Enter") {
+                joinGroup();
+            }
+        });
+    </script>
+
+</body>
+</html>
